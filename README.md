@@ -8,6 +8,8 @@ mysql 8.4.5
 php 8.4.6
 ```
 
+注：`index`目录下为源码,`rewrite`目录下为伪静态配置
+
 # 配置
 `config-template.php`重命名为`config.php`并填写其中配置项
 
