@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>404 Not Found</title>
+<style>
+@font-face{font-family:'Share Tech Mono';font-style:normal;font-weight:400;src:local('Share Tech Mono'),local('ShareTechMono-Regular'),url(https://fonts.gstatic.com/s/sharetechmono/v8/J7aHnp1uDWRBEqV98dVQztYldFcLowEF.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}*{margin:0;padding:0;border:0;font-size:100%;font:inherit;vertical-align:baseline;box-sizing:border-box;color:inherit;}body{background-image:linear-gradient(120deg,#008856 0%,#000000 100%);height:100vh;}h1{font-size:45vw;text-align:center;position:fixed;width:100vw;z-index:1;color:#ffffff26;text-shadow:0 0 50px rgba(0,0,0,0.07);top:50%;-webkit-transform:translateY(-50%);transform:translateY(-50%);font-family:"Montserrat",monospace;}div{background:rgba(0,0,0,0);width:70vw;position:relative;top:50%;-webkit-transform:translateY(-50%);transform:translateY(-50%);margin:0 auto;padding:30px 30px 10px;box-shadow:0 0 150px -20px rgba(0,0,0,0.5);z-index:3;}P{font-family:"Share Tech Mono",monospace;color:#f5f5f5;margin:0 0 20px;font-size:17px;line-height:1.2;}span{color:#f0c674;}i{color:#8abeb7;}div a{text-decoration:none;}b{color:#81a2be;}a.avatar{position:fixed;bottom:15px;right:-100px;-webkit-animation:slide 0.5s 4.5s forwards;animation:slide 0.5s 4.5s forwards;display:block;z-index:4}a.avatar img{border-radius:100%;width:44px;border:2px solid white;}@-webkit-keyframes slide{from{right:-100px;-webkit-transform:rotate(360deg);transform:rotate(360deg);opacity:0;}to{right:15px;-webkit-transform:rotate(0deg);transform:rotate(0deg);opacity:1;}}@keyframes slide{from{right:-100px;-webkit-transform:rotate(360deg);transform:rotate(360deg);opacity:0;}to{right:15px;-webkit-transform:rotate(0deg);transform:rotate(0deg);opacity:1;}}
+</style>
+</head>
+<body>
+<h1>404</h1>
+<div><p>> <span>错误代码</span>: "<i>HTTP 404 Not Found</i>"</p>
+<p> <span>错误原因1</span>: [<b>API不存在]</b>]</span> "<i>请检查您的请求路径，是否正确填写API地址</i>"</p>
+<p> <span>错误原因2</span>: [<b>防火墙拦截</b>]</span> "<i>解决方法：确保你的请求参数符合预期的格式和规范。避免使用非法字符、特殊字符或过长的参数值。</i>"</p>
+<p> <span>错误原因3</span>: [<b>站点配置目录不正确。</b>]</span> "<i>解决办法：检查配置文件是否正确，或者修改站点配置目录指定到应用程序目录中。</i>"</p>
+<p> <span>错误原因4</span>: [<b>伪静态配置有误</b>]</span> "<i>解决办法：将伪静态规则删除，或者重新编写正确的伪静态规则，或关闭伪静态配置</i>"</p>
+</div>
+<script>
+var str=document.getElementsByTagName('div')[0].innerHTML.toString();var i=0;document.getElementsByTagName('div')[0].innerHTML="";setTimeout(function(){var se=setInterval(function(){i++;document.getElementsByTagName('div')[0].innerHTML=str.slice(0,i)+"|";if(i==str.length){clearInterval(se);document.getElementsByTagName('div')[0].innerHTML=str}},10)},0);
+</script>
+</body>
+</html>
+    

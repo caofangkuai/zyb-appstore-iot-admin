@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZYB-AppStore-IoT 后台管理系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 20px 0;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo h1 {
+            font-size: 28px;
+            margin-left: 10px;
+        }
+
+        .logo-icon {
+            font-size: 32px;
+        }
+
+        .tabs {
+            display: flex;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .tab.active {
+            background: #6a11cb;
+            color: white;
+        }
+
+        .tab:hover:not(.active) {
+            background: #f0f0f0;
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: #6a11cb;
+            box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.1);
+            outline: none;
+        }
+
+        .input-with-button {
+            display: flex;
+        }
+
+        .input-with-button input {
+            flex: 1;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .input-with-button button {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+            background: #6a11cb;
+            color: white;
+            border: none;
+            padding: 0 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+
+        .input-with-button button:hover {
+            background: #5a0db3;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #6a11cb;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a0db3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(106, 17, 203, 0.3);
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+
+        .app-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #6a11cb;
+        }
+
+        .app-info h3 {
+            margin-bottom: 15px;
+            color: #6a11cb;
+        }
+
+        .app-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .detail-item {
+            margin-bottom: 10px;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #777;
+            border-top: 1px solid #eee;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .logo {
+                margin-bottom: 15px;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .app-details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="logo">
+                    <span class="logo-icon">📱</span>
+                    <h1>ZYB-AppStore-IoT 后台管理系统</h1>
+                </div>
+                <div class="user-info">
+                    管理员，欢迎回来！
+                </div>
+            </div>
+        </header>
+
+        <div class="tabs">
+            <div class="tab active" data-tab="add">添加应用</div>
+            <div class="tab" data-tab="update">更新应用</div>
+            <div class="tab" data-tab="delete">删除应用</div>
+        </div>
+
+        <div id="message" class="message"></div>
+
+        <!-- 添加应用 -->
+        <div class="tab-content active" id="add">
+            <h2>添加新应用</h2>
+            <p class="description">请填写以下信息来添加新的应用到系统中</p>
+
+            <form id="addForm">
+                <div class="form-group">
+                    <label for="add_id">应用ID *</label>
+                    <div class="input-with-button">
+                        <input type="number" id="add_id" name="id" min="114514" required>
+                        <button type="button" id="generateId">随机生成</button>
+                    </div>
+                    <small>ID必须大于114514且不能与相同SN的应用重复</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="add_icon">应用图标直链 *</label>
+                    <input type="url" id="add_icon" name="icon" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="add_name">应用名称 *</label>
+                    <input type="text" id="add_name" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="add_pkgName">APK包名 *</label>
+                    <input type="text" id="add_pkgName" name="pkgName" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="add_apkUrl">APK文件直链 *</label>
+                    <input type="url" id="add_apkUrl" name="apkUrl" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="add_apkMd5">APK文件MD5 *</label>
+                    <input type="text" id="add_apkMd5" name="apkMd5" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="add_sn">目标设备SN号 *</label>
+                    <input type="text" id="add_sn" name="sn" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary">添加应用</button>
+            </form>
+        </div>
+
+        <!-- 更新应用 -->
+        <div class="tab-content" id="update">
+            <h2>更新应用信息</h2>
+            <p class="description">请输入应用ID和SN号来查找并更新应用信息</p>
+
+            <form id="searchUpdateForm">
+                <div class="form-group">
+                    <label for="update_search_id">应用ID *</label>
+                    <input type="number" id="update_search_id" name="id" min="114514" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="update_search_sn">目标设备SN号 *</label>
+                    <input type="text" id="update_search_sn" name="sn" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary">查找应用</button>
+            </form>
+
+            <div id="updateAppInfo" class="app-info" style="display: none;">
+                <h3>应用信息</h3>
+                <div class="app-details">
+                    <div class="detail-item">
+                        <span class="detail-label">应用ID:</span> <span id="update_id_display"></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">应用名称:</span> <span id="update_name_display"></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">APK包名:</span> <span id="update_pkgName_display"></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">SN号:</span> <span id="update_sn_display"></span>
+                    </div>
+                </div>
+            </div>
+
+            <form id="updateForm" style="display: none;">
+                <input type="hidden" id="update_id" name="id">
+
+                <div class="form-group">
+                    <label for="update_icon">应用图标直链 *</label>
+                    <input type="url" id="update_icon" name="icon" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="update_name">应用名称 *</label>
+                    <input type="text" id="update_name" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="update_pkgName">APK包名 *</label>
+                    <input type="text" id="update_pkgName" name="pkgName" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="update_apkUrl">APK文件直链 *</label>
+                    <input type="url" id="update_apkUrl" name="apkUrl" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="update_apkMd5">APK文件MD5 *</label>
+                    <input type="text" id="update_apkMd5" name="apkMd5" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="update_sn">目标设备SN号 *</label>
+                    <input type="text" id="update_sn" name="sn" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary">更新应用</button>
+            </form>
+        </div>
+
+        <!-- 删除应用 -->
+        <div class="tab-content" id="delete">
+            <h2>删除应用</h2>
+            <p class="description">请输入应用ID和SN号来删除应用</p>
+
+            <form id="deleteForm">
+                <div class="form-group">
+                    <label for="delete_id">应用ID *</label>
+                    <input type="number" id="delete_id" name="id" min="114514" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="delete_sn">目标设备SN号 *</label>
+                    <input type="text" id="delete_sn" name="sn" required>
+                </div>
+
+                <button type="submit" class="btn btn-danger">删除应用</button>
+            </form>
+
+            <div id="deleteAppInfo" class="app-info" style="display: none;">
+                <h3>即将删除的应用信息</h3>
+                <div class="app-details">
+                    <div class="detail-item">
+                        <span class="detail-label">应用ID:</span> <span id="delete_id_display"></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">应用名称:</span> <span id="delete_name_display"></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">APK包名:</span> <span id="delete_pkgName_display"></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">SN号:</span> <span id="delete_sn_display"></span>
+                    </div>
+                </div>
+                <button id="confirmDelete" class="btn btn-danger" style="margin-top: 15px;">确认删除</button>
+            </div>
+        </div>
+
+        <footer>
+            <p>ZYB-AppStore-IoT 后台管理系统 &copy; caofangkuai</p>
+        </footer>
+    </div>
+
+    <script>
+        // 标签切换功能
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // 移除所有标签和内容的active类
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+                // 为当前标签和对应内容添加active类
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.tab).classList.add('active');
+
+                // 清除消息
+                document.getElementById('message').className = 'message';
+                document.getElementById('message').textContent = '';
+            });
+        });
+
+        // 生成随机ID
+        document.getElementById('generateId').addEventListener('click', () => {
+            const min = 114515;
+            const max = 999999;
+            const randomId = Math.floor(Math.random() * (max - min + 1)) + min;
+            document.getElementById('add_id').value = randomId;
+        });
+
+        // 添加应用表单提交
+        document.getElementById('addForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+
+            fetch('api?action=add', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showMessage(data.message, 'success');
+                        this.reset();
+                    } else {
+                        showMessage(data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showMessage('添加应用时发生错误', 'error');
+                });
+        });
+
+        // 查找更新应用
+        document.getElementById('searchUpdateForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+
+            fetch('api?action=search', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // 显示应用信息
+                        document.getElementById('update_id_display').textContent = data.app.id;
+                        document.getElementById('update_name_display').textContent = data.app.name;
+                        document.getElementById('update_pkgName_display').textContent = data.app.pkgName;
+                        document.getElementById('update_sn_display').textContent = data.app.sn;
+
+                        document.getElementById('updateAppInfo').style.display = 'block';
+
+                        // 填充表单
+                        document.getElementById('update_id').value = data.app.id;
+                        document.getElementById('update_icon').value = data.app.icon;
+                        document.getElementById('update_name').value = data.app.name;
+                        document.getElementById('update_pkgName').value = data.app.pkgName;
+                        document.getElementById('update_apkUrl').value = data.app.apkUrl;
+                        document.getElementById('update_apkMd5').value = data.app.apkMd5;
+                        document.getElementById('update_sn').value = data.app.sn;
+
+                        document.getElementById('updateForm').style.display = 'block';
+                        showMessage('应用查找成功', 'success');
+                    } else {
+                        showMessage(data.message, 'error');
+                        document.getElementById('updateAppInfo').style.display = 'none';
+                        document.getElementById('updateForm').style.display = 'none';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showMessage('查找应用时发生错误', 'error');
+                });
+        });
+
+        // 更新应用表单提交
+        document.getElementById('updateForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+
+            fetch('api?action=update', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showMessage(data.message, 'success');
+                    } else {
+                        showMessage(data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showMessage('更新应用时发生错误', 'error');
+                });
+        });
+
+        // 删除应用表单提交
+        document.getElementById('deleteForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+
+            fetch('api?action=search', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // 显示应用信息
+                        document.getElementById('delete_id_display').textContent = data.app.id;
+                        document.getElementById('delete_name_display').textContent = data.app.name;
+                        document.getElementById('delete_pkgName_display').textContent = data.app.pkgName;
+                        document.getElementById('delete_sn_display').textContent = data.app.sn;
+
+                        document.getElementById('deleteAppInfo').style.display = 'block';
+                        showMessage('应用查找成功，请确认删除', 'success');
+                    } else {
+                        showMessage(data.message, 'error');
+                        document.getElementById('deleteAppInfo').style.display = 'none';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showMessage('查找应用时发生错误', 'error');
+                });
+        });
+
+        // 确认删除
+        document.getElementById('confirmDelete').addEventListener('click', function () {
+            const id = document.getElementById('delete_id').value;
+            const sn = document.getElementById('delete_sn').value;
+
+            const formData = new FormData();
+            formData.append('id', id);
+            formData.append('sn', sn);
+
+            fetch('api?action=delete', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showMessage(data.message, 'success');
+                        document.getElementById('deleteForm').reset();
+                        document.getElementById('deleteAppInfo').style.display = 'none';
+                    } else {
+                        showMessage(data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showMessage('删除应用时发生错误', 'error');
+                });
+        });
+
+        // 显示消息函数
+        function showMessage(message, type) {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = message;
+            messageEl.className = `message ${type}`;
+
+            // 5秒后自动隐藏消息
+            setTimeout(() => {
+                messageEl.className = 'message';
+                messageEl.textContent = '';
+            }, 5000);
+        }
+    </script>
+</body>
+
+</html>
