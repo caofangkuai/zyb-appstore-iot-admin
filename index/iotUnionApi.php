@@ -14,7 +14,7 @@ function parentInstallApp($token, $secret, $serialNumber, $appId)
 {
     $postParams = [
         "sn" => $serialNumber,
-        "nameOfApp" => $appId,
+        "appId" => $appId,
     ];
     return serverCommonApi($token, $secret, $serialNumber, $postParams, "/appStore/installToPad");
 }
