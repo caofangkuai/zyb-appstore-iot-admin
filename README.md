@@ -14,7 +14,7 @@ php 8.4.6
 `config-template.php`重命名为`config.php`并填写其中配置项
 
 ## web后台
-部署链接后面加上`/webui`
+部署链接后面加上`/admin`
 
 ## mysql配置
 创建表`apps`,格式如下：
