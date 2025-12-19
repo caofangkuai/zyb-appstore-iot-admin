@@ -1,6 +1,9 @@
 # zyb-appstore-iot-admin
 zyb学习机应用商店私服
 
+# 支持的版本
+最新一次于`2025.12.19`测试,支持`≤4.3.0`的系统
+
 # 依赖环境
 ```
 openresty 1.27.1.2-0-1-focal
@@ -30,7 +33,7 @@ php 8.4.6
 ```
 
 ## 获取iotunion_token和iotunion_secret
-安装[FuckZybIotUnion模块](https://gitee.com/caofangkuai/how-to-crack-zyb/raw/master/%E9%99%84%E4%BB%B6/FuckZybIotUnion.apk)并激活,打开`作业帮智能`,点击小球悬浮窗,点击`打开开发者页面`,密码随便输,关闭`接口加密解密`,重启app,然后使用`Proxy Pin`开启抓包（如果有SSL问题可以用[TrustMeAlready](https://github.com/ViRb3/TrustMeAlready/)）,登录作业帮智能,在Proxy Pin中找到为`https://iot-api.zybang.com/iot-server/api/app/login`的包,其响应体应该看起来是这样的：
+安装[FuckZybIotUnion模块](https://github.com/caofangkuai/zyb-appstore-iot-admin/releases/download/%E9%99%84%E4%BB%B6/FuckZybIotUnion.apk)并激活,打开`作业帮智能`,点击小球悬浮窗,点击`打开开发者页面`,密码随便输,关闭`接口加密解密`,重启app,然后使用`Proxy Pin`开启抓包（如果有SSL问题可以用[TrustMeAlready](https://github.com/ViRb3/TrustMeAlready/)）,登录作业帮智能,在Proxy Pin中找到为`https://iot-api.zybang.com/iot-server/api/app/login`的包,其响应体应该看起来是这样的：
 ```json
 {
   "code": 200,
