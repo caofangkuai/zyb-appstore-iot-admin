@@ -1,6 +1,11 @@
 # zyb-appstore-iot-admin
 zyb学习机应用商店私服
 
+## 其他人制作的私服源码
+[idkwhatismyname(Python)](https://github.com/idkwhatismyname123/zyb-appstore-iot-admin)
+
+[咸鱼(PHP)](https://github.com/Yitiaoxianyu-h/zybappstoreadmin)
+
 # 支持的版本
 最新一次于`2025.12.19`测试,支持`≤4.3.0`的系统
 
