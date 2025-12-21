@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>远程应用安装系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(to right, #4b6cb7, #182848);
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .header h1 i {
+            font-size: 2.5rem;
+            color: #6cff8c;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .form-section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 1.4rem;
+            color: #182848;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title i {
+            color: #4b6cb7;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+        }
+        
+        .input-with-icon {
+            position: relative;
+        }
+        
+        .input-with-icon i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #4b6cb7;
+        }
+        
+        input {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        input:focus {
+            border-color: #4b6cb7;
+            box-shadow: 0 0 0 3px rgba(75, 108, 183, 0.2);
+            outline: none;
+        }
+        
+        .required::after {
+            content: " *";
+            color: #ff4757;
+        }
+        
+        .optional-badge {
+            display: inline-block;
+            background-color: #f1f8ff;
+            color: #4b6cb7;
+            font-size: 0.8rem;
+            padding: 3px 10px;
+            border-radius: 50px;
+            margin-left: 8px;
+            font-weight: normal;
+        }
+        
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            background: linear-gradient(to right, #4b6cb7, #182848);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(75, 108, 183, 0.4);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(75, 108, 183, 0.6);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .result-section {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+            display: none;
+        }
+        
+        .result-section.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .result-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .result-content {
+            padding: 15px;
+            background-color: white;
+            border-radius: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .success {
+            border-left: 5px solid #2ed573;
+        }
+        
+        .error {
+            border-left: 5px solid #ff4757;
+        }
+        
+        .loading {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 20px;
+            padding: 20px;
+        }
+        
+        .loading.active {
+            display: flex;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(75, 108, 183, 0.2);
+            border-top: 4px solid #4b6cb7;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            font-size: 1.1rem;
+            color: #4b6cb7;
+            font-weight: 600;
+        }
+        
+        .app-info {
+            background-color: #f0f7ff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #d6e4ff;
+        }
+        
+        .app-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .app-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            object-fit: cover;
+            margin-right: 15px;
+            border: 2px solid #d6e4ff;
+        }
+        
+        .app-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #182848;
+        }
+        
+        .app-summary {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .app-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .detail-label {
+            font-size: 0.9rem;
+            color: #888;
+        }
+        
+        .detail-value {
+            font-weight: 600;
+            color: #444;
+        }
+        
+        .tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            background: rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            border-radius: 0 0 20px 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .header p {
+                font-size: 1rem;
+            }
+            
+            .section-title {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-mobile-alt"></i> 远程应用安装系统</h1>
+            <p>搜索并远程安装应用到指定的IoT设备</p>
+        </div>
+        
+        <div class="content">
+            <div class="form-section">
+                <h2 class="section-title"><i class="fas fa-cogs"></i> 设备参数配置</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="sn" class="required">设备SN码</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-microchip"></i>
+                            <input type="text" id="sn" placeholder="请输入设备的SN序列号" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="appName" class="required">应用名称</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="appName" placeholder="请输入要搜索的应用名称" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="token">IoTUnion Token <span class="optional-badge">可选</span></label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-key"></i>
+                            <input type="text" id="token" placeholder="如不填写将使用系统默认配置">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="secret">IoTUnion Secret <span class="optional-badge">可选</span></label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-user-secret"></i>
+                            <input type="text" id="secret" placeholder="如不填写将使用系统默认配置">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="button-container">
+                <button id="installBtn" class="btn">
+                    <i class="fas fa-rocket"></i> 远程安装应用
+                </button>
+            </div>
+            
+            <div class="loading" id="loadingIndicator">
+                <div class="spinner"></div>
+                <div class="loading-text">正在搜索并安装应用，请稍候...</div>
+            </div>
+            
+            <div class="result-section" id="resultSection">
+                <h3 class="result-title" id="resultTitle"></h3>
+                <div class="result-content" id="resultContent"></div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>远程安装系统 v1.0 | 确保设备已连接网络并在线</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取DOM元素
+            const installBtn = document.getElementById('installBtn');
+            const snInput = document.getElementById('sn');
+            const appNameInput = document.getElementById('appName');
+            const tokenInput = document.getElementById('token');
+            const secretInput = document.getElementById('secret');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const resultSection = document.getElementById('resultSection');
+            const resultTitle = document.getElementById('resultTitle');
+            const resultContent = document.getElementById('resultContent');
+            
+            // 安装按钮点击事件
+            installBtn.addEventListener('click', function() {
+                // 验证必填字段
+                if (!snInput.value.trim()) {
+                    showError('请填写设备SN码');
+                    snInput.focus();
+                    return;
+                }
+                
+                if (!appNameInput.value.trim()) {
+                    showError('请填写应用名称');
+                    appNameInput.focus();
+                    return;
+                }
+                
+                // 显示加载指示器
+                loadingIndicator.classList.add('active');
+                resultSection.classList.remove('active');
+                installBtn.disabled = true;
+                
+                // 收集表单数据
+                const formData = {
+                    sn: snInput.value.trim(),
+                    appName: appNameInput.value.trim(),
+                    token: tokenInput.value.trim(),
+                    secret: secretInput.value.trim()
+                };
+                
+                // 发送请求到PHP后端
+                sendInstallRequest(formData);
+            });
+            
+            // 发送请求到PHP后端
+            function sendInstallRequest(formData) {
+                fetch('install', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    handleApiResponse(formData, data);
+                })
+                .catch(error => {
+                    showError('请求失败: ' + error.message);
+                })
+                .finally(() => {
+                    loadingIndicator.classList.remove('active');
+                    installBtn.disabled = false;
+                });
+            }
+            
+            // 处理API响应
+            function handleApiResponse(formData, data) {
+                if (data.errNo === 0 && data.installResult.errNo === 0) {
+                    // 显示成功结果
+                    showSuccess(data.searchResult, data.installResult, formData);
+                } else if(data.errNo !== 0){
+                    showError(data.errMsg);
+                } else if(data.installResult.errNo !== 0){
+                    showError(data.installResult.errMsg);
+                }
+                
+                // 隐藏加载指示器
+                loadingIndicator.classList.remove('active');
+                installBtn.disabled = false;
+            }
+            
+            // 显示成功结果
+            function showSuccess(appInfo, installResponse, formData) {
+                resultSection.className = "result-section active success";
+                resultTitle.innerHTML = `<i class="fas fa-check-circle" style="color:#2ed573"></i> 应用安装已启动`;
+                
+                // 格式化文件大小
+                const formatFileSize = (bytes) => {
+                    if (bytes >= 1073741824) {
+                        return (bytes / 1073741824).toFixed(2) + ' GB';
+                    } else if (bytes >= 1048576) {
+                        return (bytes / 1048576).toFixed(2) + ' MB';
+                    } else if (bytes >= 1024) {
+                        return (bytes / 1024).toFixed(2) + ' KB';
+                    } else {
+                        return bytes + ' 字节';
+                    }
+                };
+                
+                // 格式化时间戳
+                const formatTime = (timestamp) => {
+                    const date = new Date(timestamp);
+                    return date.toLocaleString('zh-CN');
+                };
+                
+                // 构建应用信息HTML
+                let appInfoHtml = `
+                    <div class="app-info">
+                        <div class="app-header">
+                            <img src="${appInfo.icon}" alt="${appInfo.name}" class="app-icon" onerror="this.src='https://via.placeholder.com/60/4b6cb7/ffffff?text=APP'">
+                            <div>
+                                <div class="app-name">${appInfo.name}</div>
+                                <div style="color:#666;font-size:0.9rem;">${appInfo.developer}</div>
+                            </div>
+                        </div>
+                        <div class="app-summary">${appInfo.summary}</div>
+                        <div class="app-details">
+                            <div class="detail-item">
+                                <span class="detail-label">应用包名</span>
+                                <span class="detail-value">${appInfo.apkName}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">版本</span>
+                                <span class="detail-value">${appInfo.apkVersion}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">文件大小</span>
+                                <span class="detail-value">${formatFileSize(appInfo.apkSize)}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">上传时间</span>
+                                <span class="detail-value">${formatTime(appInfo.uploadTime)}</span>
+                            </div>
+                        </div>
+                        <div style="margin-top:15px;">
+                            <strong>应用标签：</strong>
+                `;
+                
+                // 添加标签
+                appInfo.tags.forEach(tag => {
+                    appInfoHtml += `<span class="tag" style="background-color:${tag.bgColor};color:${tag.textColor}">${tag.name}</span>`;
+                });
+                
+                appInfoHtml += `
+                        </div>
+                        <div style="margin-top:15px;">
+                            <strong>主要权限：</strong>
+                            <ul style="margin-top:8px;padding-left:20px;color:#666;">
+                `;
+                
+                // 添加权限（最多显示5个）
+                appInfo.permissions.slice(0, 5).forEach(perm => {
+                    appInfoHtml += `<li>${perm.name}：${perm.desc}</li>`;
+                });
+                
+                if (appInfo.permissions.length > 5) {
+                    appInfoHtml += `<li>...等 ${appInfo.permissions.length - 5} 个其他权限</li>`;
+                }
+                
+                appInfoHtml += `
+                            </ul>
+                        </div>
+                    </div>
+                    <div style="background-color:#e8f5e9;padding:15px;border-radius:8px;border-left:5px solid #2ed573;">
+                        <div style="display:flex;align-items:center;margin-bottom:10px;">
+                            <i class="fas fa-check-circle" style="color:#2ed573;margin-right:10px;font-size:1.2rem;"></i>
+                            <strong>安装任务已创建</strong>
+                        </div>
+                        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:10px;margin-top:10px;">
+                            <div class="detail-item">
+                                <span class="detail-label">任务ID</span>
+                                <span class="detail-value">${installResponse.logId}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">目标设备</span>
+                                <span class="detail-value">${formData.sn}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">安装状态</span>
+                                <span class="detail-value" style="color:#2ed573;font-weight:bold;">Installing</span>
+                            </div>
+                        </div>
+                        <div style="margin-top:15px;color:#666;">
+                            <i class="fas fa-info-circle" style="margin-right:5px;"></i>
+                            应用已开始安装，请等待设备完成安装
+                        </div>
+                    </div>
+                `;
+                
+                resultContent.innerHTML = appInfoHtml;
+            }
+            
+            // 显示错误信息
+            function showError(message) {
+                resultSection.className = "result-section active error";
+                resultTitle.innerHTML = `<i class="fas fa-exclamation-circle" style="color:#ff4757"></i> 操作失败`;
+                resultContent.innerHTML = `
+                    <div style="padding:20px;text-align:center;">
+                        <i class="fas fa-times-circle" style="font-size:3rem;color:#ff4757;margin-bottom:15px;"></i>
+                        <h3 style="color:#444;margin-bottom:10px;">${message}</h3>
+                        <p style="color:#666;">请检查输入信息并重试</p>
+                    </div>
+                `;
+            }
+            
+            // 表单输入验证
+            [snInput, appNameInput, tokenInput, secretInput].forEach(input => {
+                input.addEventListener('input', function() {
+                    if (this.value.trim()) {
+                        this.style.borderColor = '#4b6cb7';
+                    } else {
+                        this.style.borderColor = '#e0e0e0';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

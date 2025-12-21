@@ -1,3 +1,4 @@
+# 此方法已被zyb于2025.12.20中午修复悬浮窗入口
 # zyb-appstore-iot-admin
 zyb学习机应用商店私服
 
@@ -23,6 +24,9 @@ php 8.4.6
 
 ## web后台
 部署链接后面加上`/webui-admin`
+
+## 一些工具
+部署链接后面加上`/tool/工具名称`,如：`remoteInstall`
 
 ## mysql配置
 创建表`apps`,格式如下：
