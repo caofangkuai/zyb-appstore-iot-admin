@@ -48,7 +48,7 @@ function handleRequest()
         return file_get_contents($newUrl, false, $context);
     } elseif ($requestMethod === 'POST') {
         $url = 'https://iot-admin.zuoyebang.com' . $_SERVER['REQUEST_URI'];
-        $postData = json_decode(file_get_contents('php://input'));
+        $postData = empty(file_get_contents("php://input"))? [] : json_decode(file_get_contents('php://input'));
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
