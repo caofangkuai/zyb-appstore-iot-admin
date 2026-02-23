@@ -23,7 +23,7 @@ php 8.4.6
 `config-template.php`重命名为`config.php`并填写其中配置项
 
 ## web后台
-部署链接后面加上`/webui-admin`
+部署链接后面加上`/webui`
 
 ## 一些工具
 部署链接后面加上`/tool/工具名称`,如：`remoteInstall`

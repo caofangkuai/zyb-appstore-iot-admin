@@ -1,4 +1,44 @@
 <?php
+function behaviorHistoryApi($token, $secret, $child_id)
+{
+	$originalParams = [
+        "child_id" => $child_id,
+        "pageNum" => "1",
+        "pageSize" => "9999"
+    ];
+    $fullParams = buildUrlParams(
+        $originalParams,
+        "6.7.2",
+        $token,
+        $secret,
+        "7.1.2",
+        "cfknb",
+        false,
+        "cfknb",
+        "cfknb",
+        "cfknb"
+    );
+    $paramsString = toUrlParamString($fullParams);
+    $url = "https://iot-api.zybang.com/iot-study/app/behaviour/get?" . $paramsString;
+    $options = [
+        'http' => [
+            'header' => "Content-Type: application/x-www-form-urlencoded\r\n",
+            'method' => 'POST',
+            'content' => ''
+        ]
+    ];
+    $context = stream_context_create($options);
+    $response = file_get_contents($url, false, $context);
+    if ($response === false) {
+        return '{"code":-1,"message":"请求失败"}';
+    }
+    $result = json_decode($response, true);
+    if (isset($result['code']) && $result['code'] == 200) {
+        return json_encode($result, JSON_UNESCAPED_UNICODE);
+    }
+    return '{"code":-1,"message":"父api错误"}';
+}
+
 function parentSearchApp($token, $secret, $serialNumber, $searchContent)
 {
     $postParams = [
