@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>批改历史记录</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        }
+        body {
+            background: linear-gradient(145deg, #f0f5fb 0%, #e3eef9 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+        }
+        .glass-master {
+            max-width: 1300px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-radius: 56px;
+            box-shadow: 0 35px 65px -20px #1f3f5c, inset 0 1px 2px rgba(255,255,255,0.7);
+            padding: 32px 30px 38px;
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+        h1 {
+            font-size: 2.6rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            background: linear-gradient(145deg, #194a5e, #1d6b6b);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 6px;
+        }
+        .tagline {
+            color: #2b5e6b;
+            margin-bottom: 28px;
+            font-size: 1rem;
+            border-left: 5px solid #57bcb2;
+            padding: 12px 24px;
+            background: #e2f0f0a0;
+            border-radius: 50px;
+            backdrop-filter: blur(2px);
+        }
+        .query-panel {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+        }
+        .field-child {
+            flex: 2;
+            min-width: 280px;
+            position: relative;
+        }
+        .field-child input {
+            width: 100%;
+            padding: 20px 26px;
+            border: none;
+            background: #ffffffdd;
+            border-radius: 60px;
+            font-size: 1.1rem;
+            box-shadow: 0 12px 22px -16px #204b47, 0 0 0 1px #c2dfdb;
+            transition: 0.2s;
+        }
+        .field-child input:focus {
+            outline: none;
+            box-shadow: 0 18px 30px -16px #1b7269, 0 0 0 3px #86cfc5;
+            background: white;
+        }
+        .field-child label {
+            position: absolute;
+            left: 26px;
+            top: -11px;
+            background: #1f4b55;
+            color: white;
+            padding: 4px 22px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            box-shadow: 0 6px 12px #1f4b5570;
+        }
+        .action-search {
+            background: #1d4c57;
+            border: none;
+            padding: 0 52px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 16px 28px -12px #134048;
+            transition: 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid #75c7bc;
+        }
+        .action-search:hover {
+            background: #256672;
+            transform: scale(1.02);
+            box-shadow: 0 22px 34px -14px #0f3d44;
+        }
+        .stats-bar {
+            background: #ffffffc4;
+            border-radius: 60px;
+            padding: 18px 28px;
+            margin-bottom: 30px;
+            border-left: 10px solid #5fc5b9;
+            font-weight: 500;
+            color: #1a454e;
+            backdrop-filter: blur(4px);
+            font-size: 1rem;
+        }
+        .masonry-grid {
+            background: #ffffffd1;
+            backdrop-filter: blur(8px);
+            border-radius: 48px;
+            padding: 24px 18px 18px 24px;
+            max-height: 640px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            box-shadow: inset 0 2px 8px #b8d9d2;
+        }
+        .history-card {
+            background: white;
+            border-radius: 36px;
+            padding: 22px 26px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 22px;
+            align-items: center;
+            box-shadow: 0 8px 18px #bfdbd6;
+            border: 1px solid #b1e2da;
+            transition: 0.18s;
+        }
+        .history-card:hover {
+            background: #f9fffe;
+            border-color: #3fb3a5;
+            box-shadow: 0 20px 30px -16px #20625b;
+            transform: translateY(-2px);
+        }
+        .thumb-block {
+            width: 100px;
+            height: 100px;
+            border-radius: 28px;
+            background: #deeeea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
+            box-shadow: 0 10px 16px #b0d3cb;
+            border: 2px solid #b9e6df;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .thumb-block:hover {
+            opacity: 0.85;
+            transform: scale(1.02);
+        }
+        .thumb-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .info-area {
+            flex: 2;
+            min-width: 220px;
+            cursor: pointer;
+        }
+        .info-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 12px 20px;
+            margin-bottom: 10px;
+        }
+        .badge-id {
+            background: #ccede6;
+            border-radius: 30px;
+            padding: 6px 22px;
+            font-weight: 600;
+            color: #0b5345;
+            font-size: 1rem;
+        }
+        .timestamp {
+            background: #e1f2ef;
+            border-radius: 30px;
+            padding: 4px 20px;
+            font-size: 0.95rem;
+            color: #1f5c5c;
+            font-weight: 500;
+        }
+        .device-chip {
+            background: #e7f3f0;
+            border-radius: 30px;
+            padding: 6px 22px;
+            font-size: 0.95rem;
+            color: #1d5555;
+            font-weight: 500;
+        }
+        .unread-tag {
+            background: #ffd0b5;
+            border-radius: 30px;
+            padding: 4px 22px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #a13e0b;
+        }
+        .read-tag {
+            background: #d6e9e5;
+            border-radius: 30px;
+            padding: 4px 22px;
+            font-size: 0.8rem;
+            color: #2e615b;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 70px 20px;
+            background: #f3fbfa;
+            border-radius: 70px;
+            color: #3f6a72;
+            font-size: 1.4rem;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10, 40, 40, 0.5);
+            backdrop-filter: blur(10px);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-window {
+            background: white;
+            border-radius: 60px;
+            max-width: 580px;
+            width: 90%;
+            padding: 32px 32px 28px;
+            box-shadow: 0 45px 70px -18px #103b3b;
+            border: 2px solid #9ed9d0;
+        }
+        .modal-window h2 {
+            color: #1b5353;
+            font-size: 2rem;
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+        .modal-pre {
+            background: #f2fbf9;
+            border-radius: 40px;
+            padding: 26px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'SF Mono', monospace;
+            font-size: 0.85rem;
+            border: 1px solid #b1e0d6;
+            max-height: 380px;
+        }
+        .modal-close-btn {
+            background: #e4f3ef;
+            border: none;
+            padding: 18px 28px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            width: 100%;
+            margin-top: 26px;
+            cursor: pointer;
+            color: #195551;
+        }
+        .modal-close-btn:hover {
+            background: #c8e7e0;
+        }
+        .image-preview-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(12px);
+            align-items: center;
+            justify-content: center;
+            z-index: 1100;
+            cursor: zoom-out;
+        }
+        .preview-content {
+            max-width: 85vw;
+            max-height: 85vh;
+            border-radius: 32px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+            border: 4px solid #d1eee7;
+            object-fit: contain;
+            background: #f0f9f6;
+            cursor: default;
+        }
+        .preview-close-icon {
+            position: absolute;
+            top: 28px;
+            right: 38px;
+            color: white;
+            font-size: 2.8rem;
+            cursor: pointer;
+            background: rgba(0,0,0,0.3);
+            width: 60px;
+            height: 60px;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+            border: 1px solid #9bcbc2;
+        }
+        .preview-close-icon:hover {
+            background: rgba(255,255,255,0.2);
+        }
+    </style>
+</head>
+<body>
+<div class="glass-master">
+    <h1>📸 批改历史记录</h1>
+    <div class="tagline">输入 child_id 查看批改历史 · 点击缩略图查看大图 · 点击信息区查看 JSON</div>
+    <div class="query-panel">
+        <div class="field-child">
+            <label>CHILD ID</label>
+            <input type="text" id="childIdInput" placeholder="例如 12345678" value="12345678">
+        </div>
+        <button class="action-search" id="searchBtn"><span>🔍</span> 查询</button>
+    </div>
+    <div class="stats-bar" id="statusMsg">✨ 等待查询</div>
+    <div class="masonry-grid" id="cardsContainer">
+        <div class="empty-state">📭 暂无数据，点击查询</div>
+    </div>
+</div>
+
+<!-- JSON 详情模态框 -->
+
+<div class="modal" id="detailModal">
+    <div class="modal-window">
+        <h2>📋 完整记录</h2>
+        <div class="modal-pre" id="modalJsonContent"></div>
+        <button class="modal-close-btn" id="closeModalBtn">关 闭</button>
+    </div>
+</div>
+
+<!-- 图片大图预览模态框 -->
+
+<div class="image-preview-modal" id="imagePreviewModal">
+    <span class="preview-close-icon" id="closePreviewBtn">&times;</span>
+    <img class="preview-content" id="previewImage" src="" alt="大图预览">
+</div>
+
+<script>
+    (function() {
+        const input = document.getElementById('childIdInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const statusDiv = document.getElementById('statusMsg');
+        const container = document.getElementById('cardsContainer');
+        const modal = document.getElementById('detailModal');
+        const modalContent = document.getElementById('modalJsonContent');
+        const closeModal = document.getElementById('closeModalBtn');
+
+        const previewModal = document.getElementById('imagePreviewModal');
+        const previewImage = document.getElementById('previewImage');
+        const closePreview = document.getElementById('closePreviewBtn');
+
+        const API_URL = './api';
+
+        function formatTimestamp(ts) {
+            if (!ts) return '--';
+            const date = new Date(Number(ts));
+            if (isNaN(date.getTime())) return String(ts);
+            return date.toLocaleString('zh-CN', { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12: false }).replace(/\//g,'-');
+        }
+
+        function openImagePreview(src) {
+            if (!src) return;
+            previewImage.src = src;
+            previewModal.style.display = 'flex';
+        }
+
+        function renderCards(dataArray) {
+            if (!dataArray || dataArray.length === 0) {
+                return '<div class="empty-state">📭 没有查询到图片历史</div>';
+            }
+
+            const sorted = [...dataArray].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+            let html = '';
+            for (const item of sorted) {
+                const id = item.id || '--';
+                const ts = formatTimestamp(item.timestamp);
+                const deviceName = item.deviceName || '未知设备';
+                const unread = item.unRead === 1;
+                const thumb = item.thumbPicture || item.picture || '';
+                const fullImage = item.picture || item.thumbPicture || '';
+                const childId = item.childId || '';
+
+                const unreadBadge = unread ? '<span class="unread-tag">🔴 未读</span>' : '<span class="read-tag">🟢 已读</span>';
+
+                html += `
+                    <div class="history-card" data-full-json='${JSON.stringify(item).replace(/'/g, "&apos;")}'>
+                        <div class="thumb-block" data-full-img="${fullImage}">
+                            <img class="thumb-img" src="${thumb}" alt="thumb" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22100%22%20height%3D%22100%22%20viewBox%3D%220%200%20100%20100%22%3E%3Crect%20width%3D%22100%22%20height%3D%22100%22%20fill%3D%22%23c7e3de%22%2F%3E%3Ctext%20x%3D%2220%22%20y%3D%2258%22%20font-size%3D%2236%22%20fill%3D%22%2330877c%22%3E📷%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                        </div>
+                        <div class="info-area">
+                            <div class="info-row">
+                                <span class="badge-id">🆔 ${childId}</span>
+                                <span class="timestamp">⏱️ ${ts}</span>
+                                <span class="device-chip">📱 ${deviceName}</span>
+                                ${unreadBadge}
+                            </div>
+                            <div class="info-row" style="margin-top:6px;">
+                                <span style="background:#f2f2f2; border-radius:30px; padding:4px 18px;">记录ID: ${id}</span>
+                                <span style="background:#f2f2f2; border-radius:30px; padding:4px 18px;">SN: ${item.sn || ''}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            return html;
+        }
+
+        function showModal(itemData) {
+            modalContent.textContent = JSON.stringify(itemData, null, 2);
+            modal.style.display = 'flex';
+        }
+
+        container.addEventListener('click', (e) => {
+            const thumbBlock = e.target.closest('.thumb-block');
+            if (thumbBlock) {
+                e.preventDefault();
+                e.stopPropagation();
+                const fullImg = thumbBlock.dataset.fullImg;
+                if (fullImg) openImagePreview(fullImg);
+                return;
+            }
+
+            const infoArea = e.target.closest('.info-area');
+            if (infoArea) {
+                const card = infoArea.closest('.history-card');
+                if (card) {
+                    const jsonStr = card.dataset.fullJson;
+                    if (jsonStr) {
+                        try {
+                            showModal(JSON.parse(jsonStr));
+                        } catch (err) {
+                            statusDiv.innerText = '⚠️ 详情解析失败';
+                        }
+                    }
+                }
+                return;
+            }
+
+            const card = e.target.closest('.history-card');
+            if (card && !e.target.closest('.thumb-block')) {
+                const jsonStr = card.dataset.fullJson;
+                if (jsonStr) {
+                    try {
+                        showModal(JSON.parse(jsonStr));
+                    } catch (err) {
+                        statusDiv.innerText = '⚠️ 详情解析失败';
+                    }
+                }
+            }
+        });
+
+        closeModal.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.style.display = 'none';
+        });
+
+        closePreview.addEventListener('click', () => {
+            previewModal.style.display = 'none';
+            previewImage.src = '';
+        });
+        previewModal.addEventListener('click', (e) => {
+            if (e.target === previewModal) {
+                previewModal.style.display = 'none';
+                previewImage.src = '';
+            }
+        });
+
+        searchBtn.addEventListener('click', async () => {
+            const childId = input.value.trim();
+            if (!childId) {
+                statusDiv.innerText = '❌ 请输入 child_id';
+                return;
+            }
+
+            statusDiv.innerText = '⏳ 查询中……';
+            container.innerHTML = '<div class="empty-state">⏳ 加载中</div>';
+
+            try {
+                const resp = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ child_id: childId })
+                });
+
+                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
+                const result = await resp.json();
+
+                if (result.code === 200 && Array.isArray(result.data)) {
+                    const data = result.data;
+                    statusDiv.innerText = `✅ 成功 · 共 ${data.length} 条记录 (按时间倒序)`;
+                    container.innerHTML = renderCards(data);
+                } else {
+                    statusDiv.innerText = `⚠️ 接口异常: '${result.message || '未知错误'}'`;
+                    container.innerHTML = '<div class="empty-state">⛔ 返回数据格式异常</div>';
+                }
+            } catch (err) {
+                statusDiv.innerText = `❌ 请求失败: ${err.message}`;
+                container.innerHTML = '<div class="empty-state">📡 网络错误</div>';
+            }
+        });
+
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') searchBtn.click();
+        });
+    })();
+</script>
+
+</body>
+</html>

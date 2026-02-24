@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>使用时长</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        }
+        body {
+            background: radial-gradient(circle at 20% 30%, #e6f0fa, #d9e2ef);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .glass-panel {
+            max-width: 1000px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 52px;
+            box-shadow: 0 30px 60px -20px rgba(20, 40, 70, 0.4), inset 0 1px 2px rgba(255,255,255,0.8);
+            padding: 32px 30px 40px;
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+        h1 {
+            font-size: 2.4rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            background: linear-gradient(145deg, #1f3a4b, #1b4e5c);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+        .sub-header {
+            color: #3b5f6e;
+            margin-bottom: 28px;
+            font-size: 1rem;
+            padding-left: 12px;
+            border-left: 5px solid #65b8b0;
+            background: linear-gradient(to right, #e2f0f0, transparent);
+            padding: 10px 20px;
+            border-radius: 40px;
+        }
+        .search-area {
+            display: flex;
+            gap: 14px;
+            margin-bottom: 36px;
+            flex-wrap: wrap;
+        }
+        .field {
+            flex: 2;
+            min-width: 260px;
+            position: relative;
+        }
+        .field input {
+            width: 100%;
+            padding: 20px 24px;
+            border: none;
+            background: #ffffffd9;
+            border-radius: 60px;
+            font-size: 1.1rem;
+            box-shadow: 0 10px 20px -10px #2b4b4b33, 0 0 0 1px #cbd5e0;
+            transition: 0.2s;
+        }
+        .field input:focus {
+            outline: none;
+            box-shadow: 0 15px 30px -12px #397a7a, 0 0 0 3px #80cbc4;
+            background: white;
+        }
+        .field label {
+            position: absolute;
+            left: 24px;
+            top: -10px;
+            background: #1f3a4b;
+            color: white;
+            padding: 4px 18px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            box-shadow: 0 6px 10px #1f3a4b40;
+        }
+        .action-btn {
+            background: #164247;
+            border: none;
+            padding: 0 46px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 15px 25px -10px #164247;
+            transition: 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid #69b0a9;
+        }
+        .action-btn:hover {
+            background: #1f5560;
+            transform: scale(1.02);
+            box-shadow: 0 20px 30px -8px #0d3138;
+        }
+        .status-bar {
+            background: #ffffffb8;
+            border-radius: 48px;
+            padding: 16px 26px;
+            margin-bottom: 28px;
+            border-left: 8px solid #57bcb2;
+            font-weight: 500;
+            color: #234;
+            backdrop-filter: blur(4px);
+            font-size: 1rem;
+        }
+        .daily-list {
+            background: #ffffffd6;
+            backdrop-filter: blur(8px);
+            border-radius: 42px;
+            padding: 18px 12px 12px 18px;
+            max-height: 540px;
+            overflow-y: auto;
+            box-shadow: inset 0 2px 6px #b3cfcf;
+        }
+        .day-card {
+            background: white;
+            border-radius: 34px;
+            margin-bottom: 16px;
+            padding: 22px 26px;
+            box-shadow: 0 6px 16px #d0e2eb;
+            border: 1px solid #b7e3df;
+            transition: 0.15s;
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 14px;
+            cursor: pointer;
+        }
+        .date-badge {
+            background: #d2ece8;
+            border-radius: 60px;
+            padding: 8px 26px;
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: #005b4f;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .total-time {
+            background: #e7f3f0;
+            border-radius: 30px;
+            padding: 6px 24px;
+            font-weight: 600;
+            color: #1d5a5a;
+            font-size: 1.2rem;
+            letter-spacing: 0.3px;
+        }
+        .app-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 18px;
+            margin-top: 14px;
+            align-items: center;
+        }
+        .app-chip {
+            background: #f0f8f7;
+            border-radius: 50px;
+            padding: 8px 20px 8px 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 2px 8px #bdd6d2;
+            border: 1px solid #bbe9e3;
+        }
+        .app-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 10px;
+            background: #e2f0ef;
+            object-fit: cover;
+            display: block;
+        }
+        .app-name {
+            font-weight: 500;
+            color: #1a3b40;
+            max-width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .app-time {
+            background: #47857b;
+            color: white;
+            border-radius: 30px;
+            padding: 4px 16px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .uninstalled-badge {
+            background: #ffcdd2;
+            color: #b71c1c;
+            font-size: 0.7rem;
+            padding: 3px 10px;
+            border-radius: 40px;
+            margin-left: 6px;
+        }
+        .expand-btn {
+            background: #cde1de;
+            border: none;
+            border-radius: 40px;
+            padding: 10px 24px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #1f4a4f;
+            cursor: pointer;
+            margin-top: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.1s;
+        }
+        .expand-btn:hover {
+            background: #b0d3ce;
+        }
+        .hidden-apps {
+            display: none;
+            margin-top: 18px;
+            padding-top: 14px;
+            border-top: 2px dashed #8fcbc1;
+            flex-wrap: wrap;
+            gap: 10px 18px;
+        }
+        .hidden-apps.show {
+            display: flex;
+        }
+        .empty-block {
+            text-align: center;
+            padding: 50px 20px;
+            background: #f4fafc;
+            border-radius: 60px;
+            color: #4f6a78;
+            font-size: 1.3rem;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(20, 45, 45, 0.5);
+            backdrop-filter: blur(7px);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-box {
+            background: white;
+            border-radius: 56px;
+            max-width: 520px;
+            width: 90%;
+            padding: 32px 32px 28px;
+            box-shadow: 0 40px 60px -16px #102b2b;
+            border: 2px solid #a1ddd6;
+        }
+        .modal-box h2 {
+            color: #153b40;
+            font-size: 2rem;
+            font-weight: 500;
+            margin-bottom: 16px;
+        }
+        .modal-pre {
+            background: #f2faf9;
+            border-radius: 36px;
+            padding: 24px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'SF Mono', monospace;
+            font-size: 0.85rem;
+            border: 1px solid #b0dbd4;
+            max-height: 380px;
+        }
+        .modal-close {
+            background: #e2f0ee;
+            border: none;
+            padding: 16px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            width: 100%;
+            margin-top: 24px;
+            cursor: pointer;
+            color: #1a4a4a;
+        }
+        .modal-close:hover {
+            background: #c6e3de;
+        }
+    </style>
+</head>
+<body>
+<div class="glass-panel">
+    <h1>📱 使用时长日报</h1>
+    <div class="sub-header">按日聚合应用使用时间 · 点击卡片查看详情</div>
+    <div class="search-area">
+        <div class="field">
+            <label>CHILD ID</label>
+            <input type="text" id="childIdInput" placeholder="例如 100123" value="100456">
+        </div>
+        <button class="action-btn" id="queryBtn"><span>🔎</span> 查询</button>
+    </div>
+    <div class="status-bar" id="statusMsg">✨ 输入child_id，查看每日使用报告</div>
+    <div class="daily-list" id="dailyContainer">
+        <div class="empty-block">📋 暂无数据，点击查询</div>
+    </div>
+</div>
+
+<div class="modal" id="detailModal">
+    <div class="modal-box">
+        <h2>📄 日报详情</h2>
+        <div class="modal-pre" id="modalJson"></div>
+        <button class="modal-close" id="closeModal">关 闭</button>
+    </div>
+</div>
+
+<script>
+    (function() {
+        const input = document.getElementById('childIdInput');
+        const queryBtn = document.getElementById('queryBtn');
+        const statusDiv = document.getElementById('statusMsg');
+        const container = document.getElementById('dailyContainer');
+        const modal = document.getElementById('detailModal');
+        const modalJson = document.getElementById('modalJson');
+        const closeModal = document.getElementById('closeModal');
+
+        const API_URL = './api';
+
+        function formatDate(dtNumber) {
+            const str = String(dtNumber);
+            if (str.length === 8) {
+                return `${str.slice(0,4)}-${str.slice(4,6)}-${str.slice(6,8)}`;
+            }
+            return dtNumber;
+        }
+
+        function formatTotal(seconds) {
+            if (seconds < 60) return seconds + '秒';
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return mins + '分' + (secs ? secs + '秒' : '');
+        }
+
+        function handleExpand(dayId) {
+            const hiddenDiv = document.getElementById('hidden-' + dayId);
+            if (hiddenDiv) {
+                hiddenDiv.classList.toggle('show');
+            }
+        }
+
+        function renderDailyList(dataArray) {
+            if (!dataArray || dataArray.length === 0) {
+                return '<div class="empty-block">📭 没有使用记录</div>';
+            }
+
+            const sorted = [...dataArray].sort((a, b) => (b.dt || 0) - (a.dt || 0));
+
+            let html = '';
+            for (let index = 0; index < sorted.length; index++) {
+                const day = sorted[index];
+                const dt = day.dt;
+                const totalSec = day.total_time || 0;
+                const apps = day.app || [];
+
+                const dateLabel = formatDate(dt);
+                const totalFormatted = formatTotal(totalSec);
+                const dayId = `day-${dt}-${index}`;
+
+                let topChips = '';
+                let hiddenChips = '';
+                const showCount = 3;
+
+                for (let i = 0; i < apps.length; i++) {
+                    const app = apps[i];
+                    const name = app.name || '未知';
+                    const time = app.time || 0;
+                    const uninstalled = app.uninstalled;
+                    const timeStr = formatTotal(time);
+                    const iconUrl = app.icon || '';
+
+                    const chipHtml = `
+                        <span class="app-chip">
+                            <img class="app-icon" src="${iconUrl}" alt="" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2240%22%20height%3D%2240%22%20viewBox%3D%220%200%2040%2040%22%3E%3Crect%20width%3D%2240%22%20height%3D%2240%22%20fill%3D%22%23cfe9e5%22%2F%3E%3Ctext%20x%3D%228%22%20y%3D%2226%22%20font-size%3D%2216%22%20fill%3D%22%23366f6a%22%3E📱%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                            <span class="app-name" title="${name}">${name}</span>
+                            <span class="app-time">${timeStr}</span>
+                            ${uninstalled ? '<span class="uninstalled-badge">已卸载</span>' : ''}
+                        </span>
+                    `;
+
+                    if (i < showCount) {
+                        topChips += chipHtml;
+                    } else {
+                        hiddenChips += chipHtml;
+                    }
+                }
+
+                const expandBtn = apps.length > showCount ? 
+                    `<div class="expand-btn" data-day="${dayId}">▼ 展开 ${apps.length - showCount} 个应用</div>` : '';
+
+                html += `
+                    <div class="day-card" data-full-json='${JSON.stringify(day).replace(/'/g, "&apos;")}'>
+                        <div class="card-header">
+                            <span class="date-badge">📆 ${dateLabel}</span>
+                            <span class="total-time">⏱️ 总计 ${totalFormatted}</span>
+                        </div>
+                        <div class="app-preview">
+                            ${topChips || '<span class="app-chip">📭 无应用</span>'}
+                        </div>
+                        <div class="hidden-apps" id="hidden-${dayId}">
+                            ${hiddenChips}
+                        </div>
+                        ${expandBtn}
+                    </div>
+                `;
+            }
+            return html;
+        }
+
+        function showModal(dayData) {
+            modalJson.textContent = JSON.stringify(dayData, null, 2);
+            modal.style.display = 'flex';
+        }
+
+        container.addEventListener('click', (e) => {
+            const expandButton = e.target.closest('.expand-btn');
+            if (expandButton) {
+                const dayId = expandButton.dataset.day;
+                const hiddenDiv = document.getElementById('hidden-' + dayId);
+                if (hiddenDiv) {
+                    hiddenDiv.classList.toggle('show');
+                    expandButton.textContent = hiddenDiv.classList.contains('show') ? 
+                        '▲ 收起应用' : `▼ 展开 ${hiddenDiv.children.length} 个应用`;
+                }
+                return;
+            }
+
+            const card = e.target.closest('.day-card');
+            if (!card || e.target.closest('.expand-btn')) return;
+            const jsonStr = card.dataset.fullJson;
+            if (jsonStr) {
+                try {
+                    showModal(JSON.parse(jsonStr));
+                } catch (err) {
+                    statusDiv.innerText = '⚠️ 详情解析失败';
+                }
+            }
+        });
+
+        closeModal.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.style.display = 'none';
+        });
+
+        queryBtn.addEventListener('click', async () => {
+            const childId = input.value.trim();
+            if (!childId) {
+                statusDiv.innerText = '❌ 请输入 child_id';
+                return;
+            }
+
+            statusDiv.innerText = '⏳ 查询中……';
+            container.innerHTML = '<div class="empty-block">⏳ 加载中</div>';
+
+            try {
+                const resp = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ child_id: childId })
+                });
+
+                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
+                const result = await resp.json();
+
+                if (result.code === 200 && Array.isArray(result.data)) {
+                    const data = result.data;
+                    statusDiv.innerText = `✅ 成功 · 共 ${data.length} 天记录 (按日期倒序)`;
+                    container.innerHTML = renderDailyList(data);
+                } else {
+                    statusDiv.innerText = `⚠️ 接口异常: '${result.message || '未知错误'}'`;
+                    container.innerHTML = '<div class="empty-block">⛔ 返回数据格式异常</div>';
+                }
+            } catch (err) {
+                statusDiv.innerText = `❌ 请求失败: ${err.message}`;
+                container.innerHTML = '<div class="empty-block">📡 网络错误</div>';
+            }
+        });
+
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') queryBtn.click();
+        });
+    })();
+</script>
+
+</body>
+</html>
