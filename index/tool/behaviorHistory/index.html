@@ -1,332 +1,355 @@
-<!DOCTYPE html>
+<!doctype html>
 
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>行为历史查询</title>
+    <script src="../../autoParams.js" input="#childId" btn="#fetchBtn"></script>
+    <style>
+      * {
+        box-sizing: border-box;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          "Helvetica Neue",
+          sans-serif;
+      }
+      body {
+        background: linear-gradient(145deg, #f6f9fc 0%, #eef2f7 100%);
+        min-height: 100vh;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 16px;
+      }
+      .card {
+        max-width: 900px;
+        width: 100%;
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-radius: 40px;
+        box-shadow:
+          0 25px 50px -12px rgba(0, 0, 0, 0.25),
+          inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+        padding: 28px 28px 36px;
+        transition: all 0.2s ease;
+      }
+      h2 {
+        margin: 0 0 8px 0;
+        font-weight: 600;
+        font-size: 2rem;
+        letter-spacing: -0.02em;
+        background: linear-gradient(135deg, #1e2b3a, #2c3e50);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .subhead {
+        color: #4b5e71;
+        margin-bottom: 28px;
+        font-size: 0.95rem;
+        border-left: 4px solid #80cbc4;
+        padding-left: 16px;
+        background: rgba(128, 203, 196, 0.1);
+        border-radius: 0 12px 12px 0;
+      }
+      .input-group {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 32px;
+        flex-wrap: wrap;
+      }
+      .input-wrapper {
+        flex: 2;
+        min-width: 240px;
+        position: relative;
+      }
+      .input-wrapper input {
+        width: 100%;
+        padding: 18px 20px;
+        border: none;
+        background: #ffffffd9;
+        border-radius: 34px;
+        font-size: 1rem;
+        box-shadow:
+          0 8px 18px -8px rgba(0, 50, 30, 0.15),
+          0 0 0 1px rgba(0, 0, 0, 0.02);
+        transition: all 0.2s;
+      }
+      .input-wrapper input:focus {
+        outline: none;
+        box-shadow:
+          0 10px 25px -10px #3b9b8e,
+          0 0 0 3px rgba(59, 155, 142, 0.25);
+        background: white;
+      }
+      .input-wrapper label {
+        position: absolute;
+        left: 20px;
+        top: -10px;
+        background: #2c3e50;
+        color: white;
+        padding: 2px 12px;
+        border-radius: 40px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        letter-spacing: 0.3px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      button {
+        flex: 0 0 auto;
+        background: #1e2b3a;
+        border: none;
+        padding: 0 40px;
+        border-radius: 40px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: white;
+        letter-spacing: 0.3px;
+        cursor: pointer;
+        box-shadow: 0 12px 22px -10px #1e2b3a;
+        transition: 0.15s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+      button:hover {
+        background: #2c3e50;
+        transform: scale(1.02);
+        box-shadow: 0 18px 28px -10px #0f1a24;
+      }
+      button:active {
+        transform: scale(0.98);
+      }
+      .status {
+        padding: 14px 20px;
+        background: #ffffffb3;
+        border-radius: 30px;
+        margin-bottom: 28px;
+        font-size: 0.95rem;
+        color: #335;
+        border-left: 6px solid #80cbc4;
+        backdrop-filter: blur(4px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+      }
+      .timeline-container {
+        background: #ffffffc2;
+        backdrop-filter: blur(8px);
+        border-radius: 36px;
+        padding: 20px 10px 10px 20px;
+        box-shadow:
+          inset 0 1px 4px rgba(0, 0, 0, 0.02),
+          0 20px 30px -20px rgba(0, 50, 20, 0.2);
+        max-height: 540px;
+        overflow-y: auto;
+      }
+      .timeline {
+        list-style: none;
+        margin: 0;
+        padding: 0 6px 0 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .timeline-item {
+        background: white;
+        border-radius: 24px;
+        padding: 18px 22px;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 16px;
+        box-shadow: 0 3px 12px rgba(0, 20, 10, 0.08);
+        transition: all 0.2s;
+        border: 1px solid rgba(128, 203, 196, 0.3);
+        cursor: pointer;
+      }
+      .timeline-item:hover {
+        background: #f8fffe;
+        border-color: #80cbc4;
+        box-shadow: 0 12px 22px -14px #2c3e50;
+        transform: translateY(-1px);
+      }
+      .time-badge {
+        background: #e0f2f1;
+        border-radius: 36px;
+        padding: 8px 18px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: #00695c;
+        min-width: 100px;
+        text-align: center;
+        box-shadow: inset 0 1px 3px #b2dfdb;
+      }
+      .behaviour-detail {
+        flex: 2;
+        font-weight: 500;
+        font-size: 1.1rem;
+        color: #1e2b3a;
+        word-break: break-word;
+      }
+      .app-name {
+        background: #eceff1;
+        border-radius: 40px;
+        padding: 5px 18px;
+        font-size: 0.85rem;
+        color: #37474f;
+        max-width: 260px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-family: "SF Mono", "Fira Code", monospace;
+      }
+      .type-tag {
+        background: #cfd8dc;
+        border-radius: 20px;
+        padding: 4px 14px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #2c3e50;
+        letter-spacing: 0.3px;
+      }
+      .empty-state {
+        text-align: center;
+        padding: 48px 20px;
+        color: #6b7f8f;
+        font-size: 1.2rem;
+        background: #f4f9fb;
+        border-radius: 50px;
+      }
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(10, 30, 20, 0.4);
+        backdrop-filter: blur(8px);
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+      }
+      .modal-content {
+        background: white;
+        border-radius: 48px;
+        max-width: 500px;
+        width: 90%;
+        padding: 32px 32px 28px;
+        box-shadow: 0 40px 70px -10px #0b1e1a;
+        border: 2px solid #b2dfdb;
+      }
+      .modal-content h3 {
+        margin: 0 0 18px 0;
+        color: #1e2b3a;
+        font-size: 1.8rem;
+        font-weight: 500;
+        letter-spacing: -0.01em;
+      }
+      .modal-detail pre {
+        background: #f0f6f7;
+        padding: 22px;
+        border-radius: 30px;
+        overflow-x: auto;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        font-family: "SF Mono", monospace;
+        font-size: 0.85rem;
+        border: 1px solid #b0bec5;
+        max-height: 400px;
+        overflow-y: auto;
+      }
+      .close-btn {
+        background: #eceff1;
+        border: none;
+        padding: 16px 28px;
+        border-radius: 40px;
+        font-weight: 600;
+        font-size: 1rem;
+        margin-top: 24px;
+        width: 100%;
+        cursor: pointer;
+        color: #1e2b3a;
+        transition: 0.15s;
+      }
+      .close-btn:hover {
+        background: #cfd8dc;
+      }
+    </style>
+  </head>
 
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>行为历史查询</title>
-	<style>
-		* {
-		    box-sizing: border-box;
-		    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-		}
-		body {
-		    background: linear-gradient(145deg, #f6f9fc 0%, #eef2f7 100%);
-		    min-height: 100vh;
-		    margin: 0;
-		    display: flex;
-		    justify-content: center;
-		    align-items: center;
-		    padding: 16px;
-		}
-		.card {
-		    max-width: 900px;
-		    width: 100%;
-		    background: rgba(255,255,255,0.75);
-		    backdrop-filter: blur(20px);
-		    -webkit-backdrop-filter: blur(20px);
-		    border-radius: 40px;
-		    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25), inset 0 0 0 1px rgba(255,255,255,0.6);
-		    padding: 28px 28px 36px;
-		    transition: all 0.2s ease;
-		}
-		h2 {
-		    margin: 0 0 8px 0;
-		    font-weight: 600;
-		    font-size: 2rem;
-		    letter-spacing: -0.02em;
-		    background: linear-gradient(135deg, #1e2b3a, #2c3e50);
-		    -webkit-background-clip: text;
-		    background-clip: text;
-		    color: transparent;
-		    display: flex;
-		    align-items: center;
-		    gap: 8px;
-		}
-		.subhead {
-		    color: #4b5e71;
-		    margin-bottom: 28px;
-		    font-size: 0.95rem;
-		    border-left: 4px solid #80cbc4;
-		    padding-left: 16px;
-		    background: rgba(128, 203, 196, 0.1);
-		    border-radius: 0 12px 12px 0;
-		}
-		.input-group {
-		    display: flex;
-		    gap: 12px;
-		    margin-bottom: 32px;
-		    flex-wrap: wrap;
-		}
-		.input-wrapper {
-		    flex: 2;
-		    min-width: 240px;
-		    position: relative;
-		}
-		.input-wrapper input {
-		    width: 100%;
-		    padding: 18px 20px;
-		    border: none;
-		    background: #ffffffd9;
-		    border-radius: 34px;
-		    font-size: 1rem;
-		    box-shadow: 0 8px 18px -8px rgba(0,50,30,0.15), 0 0 0 1px rgba(0,0,0,0.02);
-		    transition: all 0.2s;
-		}
-		.input-wrapper input:focus {
-		    outline: none;
-		    box-shadow: 0 10px 25px -10px #3b9b8e, 0 0 0 3px rgba(59, 155, 142, 0.25);
-		    background: white;
-		}
-		.input-wrapper label {
-		    position: absolute;
-		    left: 20px;
-		    top: -10px;
-		    background: #2c3e50;
-		    color: white;
-		    padding: 2px 12px;
-		    border-radius: 40px;
-		    font-size: 0.8rem;
-		    font-weight: 500;
-		    letter-spacing: 0.3px;
-		    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-		}
-		button {
-		    flex: 0 0 auto;
-		    background: #1e2b3a;
-		    border: none;
-		    padding: 0 40px;
-		    border-radius: 40px;
-		    font-weight: 600;
-		    font-size: 1.1rem;
-		    color: white;
-		    letter-spacing: 0.3px;
-		    cursor: pointer;
-		    box-shadow: 0 12px 22px -10px #1e2b3a;
-		    transition: 0.15s;
-		    display: flex;
-		    align-items: center;
-		    gap: 8px;
-		    border: 1px solid rgba(255,255,255,0.2);
-		}
-		button:hover {
-		    background: #2c3e50;
-		    transform: scale(1.02);
-		    box-shadow: 0 18px 28px -10px #0f1a24;
-		}
-		button:active {
-		    transform: scale(0.98);
-		}
-		.status {
-		    padding: 14px 20px;
-		    background: #ffffffb3;
-		    border-radius: 30px;
-		    margin-bottom: 28px;
-		    font-size: 0.95rem;
-		    color: #335;
-		    border-left: 6px solid #80cbc4;
-		    backdrop-filter: blur(4px);
-		    box-shadow: 0 4px 10px rgba(0,0,0,0.02);
-		}
-		.timeline-container {
-		    background: #ffffffc2;
-		    backdrop-filter: blur(8px);
-		    border-radius: 36px;
-		    padding: 20px 10px 10px 20px;
-		    box-shadow: inset 0 1px 4px rgba(0,0,0,0.02), 0 20px 30px -20px rgba(0,50,20,0.2);
-		    max-height: 540px;
-		    overflow-y: auto;
-		}
-		.timeline {
-		    list-style: none;
-		    margin: 0;
-		    padding: 0 6px 0 0;
-		    display: flex;
-		    flex-direction: column;
-		    gap: 10px;
-		}
-		.timeline-item {
-		    background: white;
-		    border-radius: 24px;
-		    padding: 18px 22px;
-		    display: flex;
-		    align-items: center;
-		    flex-wrap: wrap;
-		    gap: 16px;
-		    box-shadow: 0 3px 12px rgba(0,20,10,0.08);
-		    transition: all 0.2s;
-		    border: 1px solid rgba(128, 203, 196, 0.3);
-		    cursor: pointer;
-		}
-		.timeline-item:hover {
-		    background: #f8fffe;
-		    border-color: #80cbc4;
-		    box-shadow: 0 12px 22px -14px #2c3e50;
-		    transform: translateY(-1px);
-		}
-		.time-badge {
-		    background: #e0f2f1;
-		    border-radius: 36px;
-		    padding: 8px 18px;
-		    font-weight: 600;
-		    font-size: 1.1rem;
-		    color: #00695c;
-		    min-width: 100px;
-		    text-align: center;
-		    box-shadow: inset 0 1px 3px #b2dfdb;
-		}
-		.behaviour-detail {
-		    flex: 2;
-		    font-weight: 500;
-		    font-size: 1.1rem;
-		    color: #1e2b3a;
-		    word-break: break-word;
-		}
-		.app-name {
-		    background: #eceff1;
-		    border-radius: 40px;
-		    padding: 5px 18px;
-		    font-size: 0.85rem;
-		    color: #37474f;
-		    max-width: 260px;
-		    overflow: hidden;
-		    text-overflow: ellipsis;
-		    white-space: nowrap;
-		    font-family: 'SF Mono', 'Fira Code', monospace;
-		}
-		.type-tag {
-		    background: #cfd8dc;
-		    border-radius: 20px;
-		    padding: 4px 14px;
-		    font-size: 0.75rem;
-		    font-weight: 600;
-		    color: #2c3e50;
-		    letter-spacing: 0.3px;
-		}
-		.empty-state {
-		    text-align: center;
-		    padding: 48px 20px;
-		    color: #6b7f8f;
-		    font-size: 1.2rem;
-		    background: #f4f9fb;
-		    border-radius: 50px;
-		}
-		.modal {
-		    display: none;
-		    position: fixed;
-		    top: 0; left: 0; right: 0; bottom: 0;
-		    background: rgba(10, 30, 20, 0.4);
-		    backdrop-filter: blur(8px);
-		    align-items: center;
-		    justify-content: center;
-		    z-index: 1000;
-		}
-		.modal-content {
-		    background: white;
-		    border-radius: 48px;
-		    max-width: 500px;
-		    width: 90%;
-		    padding: 32px 32px 28px;
-		    box-shadow: 0 40px 70px -10px #0b1e1a;
-		    border: 2px solid #b2dfdb;
-		}
-		.modal-content h3 {
-		    margin: 0 0 18px 0;
-		    color: #1e2b3a;
-		    font-size: 1.8rem;
-		    font-weight: 500;
-		    letter-spacing: -0.01em;
-		}
-		.modal-detail pre {
-		    background: #f0f6f7;
-		    padding: 22px;
-		    border-radius: 30px;
-		    overflow-x: auto;
-		    white-space: pre-wrap;
-		    word-wrap: break-word;
-		    font-family: 'SF Mono', monospace;
-		    font-size: 0.85rem;
-		    border: 1px solid #b0bec5;
-		    max-height: 400px;
-		    overflow-y: auto;
-		}
-		.close-btn {
-		    background: #eceff1;
-		    border: none;
-		    padding: 16px 28px;
-		    border-radius: 40px;
-		    font-weight: 600;
-		    font-size: 1rem;
-		    margin-top: 24px;
-		    width: 100%;
-		    cursor: pointer;
-		    color: #1e2b3a;
-		    transition: 0.15s;
-		}
-		.close-btn:hover {
-		    background: #cfd8dc;
-		}
-	</style>
-</head>
+  <body>
+    <div class="card">
+      <h2>🔍 行为历史 · 时间轴</h2>
+      <div class="subhead">输入 child_id 查询设备使用快照</div>
+      <div class="input-group">
+        <div class="input-wrapper">
+          <label>CHILD ID</label>
+          <input
+            type="text"
+            id="childId"
+            placeholder="例如 100234"
+            value="100123"
+          />
+        </div>
+        <button id="fetchBtn"><span>📡</span> 查询</button>
+      </div>
+      <div class="status" id="statusMsg">✨ 等待查询</div>
+      <div class="timeline-container" id="timelineContainer">
+        <div class="empty-state">📋 输入 ID 后点击查询</div>
+      </div>
+    </div>
+    <div class="modal" id="detailModal">
+      <div class="modal-content">
+        <h3>📋 单项详情</h3>
+        <div class="modal-detail" id="modalDetail">
+          <pre></pre>
+        </div>
+        <button class="close-btn" id="closeModalBtn">关 闭</button>
+      </div>
+    </div>
+    <script>
+      (function () {
+        const childInput = document.getElementById("childId");
+        const fetchBtn = document.getElementById("fetchBtn");
+        const statusDiv = document.getElementById("statusMsg");
+        const timelineContainer = document.getElementById("timelineContainer");
+        const modal = document.getElementById("detailModal");
+        const modalPre = document.querySelector("#modalDetail pre");
+        const closeModalBtn = document.getElementById("closeModalBtn");
+        const API_URL = "./history";
 
-<body>
-	<div class="card">
-		<h2>🔍 行为历史 · 时间轴</h2>
-		<div class="subhead">输入 child_id 查询设备使用快照</div>
-		<div class="input-group">
-			<div class="input-wrapper">
-				<label>CHILD ID</label>
-				<input type="text" id="childId" placeholder="例如 100234" value="100123">
-			</div>
-			<button id="fetchBtn"><span>📡</span> 查询</button>
-		</div>
-		<div class="status" id="statusMsg">✨ 等待查询</div>
-		<div class="timeline-container" id="timelineContainer">
-			<div class="empty-state">📋 输入 ID 后点击查询</div>
-		</div>
-	</div>
-	<div class="modal" id="detailModal">
-		<div class="modal-content">
-			<h3>📋 单项详情</h3>
-			<div class="modal-detail" id="modalDetail">
-				<pre></pre>
-			</div>
-			<button class="close-btn" id="closeModalBtn">关 闭</button>
-		</div>
-	</div>
-	<script>
-		(function() {
-		    const childInput = document.getElementById('childId');
-		    const fetchBtn = document.getElementById('fetchBtn');
-		    const statusDiv = document.getElementById('statusMsg');
-		    const timelineContainer = document.getElementById('timelineContainer');
-		    const modal = document.getElementById('detailModal');
-		    const modalPre = document.querySelector('#modalDetail pre');
-		    const closeModalBtn = document.getElementById('closeModalBtn');
-		const API_URL = './history';
-		
-		closeModalBtn.addEventListener('click', () => {
-		    modal.style.display = 'none';
-		});
-		modal.addEventListener('click', (e) => {
-		    if (e.target === modal) modal.style.display = 'none';
-		});
-		
-		function renderTimeline(list) {
-		    if (!list || list.length === 0) {
-		        return '<div class="empty-state">📭 暂无行为记录</div>';
-		    }
-		    const sorted = [...list].sort((a, b) => b.timestamp - a.timestamp);
-		    let html = '<ul class="timeline">';
-		    for (let item of sorted) {
-		        const timeStr = item.timeStr || '--';
-		        const behaviour = item.behaviour || '未知行为';
-		        const appName = item.appName || '';
-		        const type = item.type ?? '?';
-		        const subType = item.subType ?? '?';
-		        const displayApp = appName && appName !== '' ? appName.split('.').pop() : '系统';
-		        html += `
+        closeModalBtn.addEventListener("click", () => {
+          modal.style.display = "none";
+        });
+        modal.addEventListener("click", (e) => {
+          if (e.target === modal) modal.style.display = "none";
+        });
+
+        function renderTimeline(list) {
+          if (!list || list.length === 0) {
+            return '<div class="empty-state">📭 暂无行为记录</div>';
+          }
+          const sorted = [...list].sort((a, b) => b.timestamp - a.timestamp);
+          let html = '<ul class="timeline">';
+          for (let item of sorted) {
+            const timeStr = item.timeStr || "--";
+            const behaviour = item.behaviour || "未知行为";
+            const appName = item.appName || "";
+            const type = item.type ?? "?";
+            const subType = item.subType ?? "?";
+            const displayApp =
+              appName && appName !== "" ? appName.split(".").pop() : "系统";
+            html += `
 		            <li class="timeline-item" data-json='${JSON.stringify(item).replace(/'/g, "&apos;")}'>
 		                <span class="time-badge">${timeStr}</span>
 		                <span class="behaviour-detail">${behaviour}</span>
@@ -334,74 +357,76 @@
 		                <span class="type-tag">${type},${subType}</span>
 		            </li>
 		        `;
-		    }
-		    html += '</ul>';
-		    return html;
-		}
-		
-		function showModalWithJson(item) {
-		    modalPre.textContent = JSON.stringify(item, null, 2);
-		    modal.style.display = 'flex';
-		}
-		
-		timelineContainer.addEventListener('click', (e) => {
-		    const itemElement = e.target.closest('.timeline-item');
-		    if (!itemElement) return;
-		    const jsonStr = itemElement.dataset.json;
-		    if (jsonStr) {
-		        try {
-		            const item = JSON.parse(jsonStr);
-		            showModalWithJson(item);
-		        } catch (error) {
-		            statusDiv.innerText = '⚠️ 解析详情失败';
-		        }
-		    }
-		});
-		
-		fetchBtn.addEventListener('click', async () => {
-		    const childId = childInput.value.trim();
-		    if (!childId) {
-		        statusDiv.innerText = '❓ 请输入 child_id';
-		        return;
-		    }
-		
-		    statusDiv.innerText = '⏳ 发送请求中……';
-		    timelineContainer.innerHTML = '<div class="empty-state">⏳ 加载中</div>';
-		
-		    try {
-		        const response = await fetch(API_URL, {
-		            method: 'POST',
-		            headers: {
-		                'Content-Type': 'application/x-www-form-urlencoded',
-		            },
-		            body: new URLSearchParams({ child_id: childId })
-		        });
-		
-		        if (!response.ok) {
-		            throw new Error(`HTTP ${response.status}`);
-		        }
-		
-		        const result = await response.json();
-		
-		        if (result.code === 200 && result.data?.list) {
-		            const list = result.data.list;
-		            statusDiv.innerText = `✅ 成功 · 共 ${list.length} 条行为 (已按时间倒序)`;
-		            timelineContainer.innerHTML = renderTimeline(list);
-		        } else {
-		            statusDiv.innerText = `⚠️ 返回异常: ${result.message || '未知错误'}`;
-		            timelineContainer.innerHTML = '<div class="empty-state">⛔ 没有有效数据</div>';
-		        }
-		    } catch (error) {
-		        statusDiv.innerText = `❌ 请求失败: ${error.message}`;
-		        timelineContainer.innerHTML = '<div class="empty-state">📡 网络或解析错误</div>';
-		    }
-		});
-		
-		childInput.addEventListener('keypress', (e) => {
-		    if (e.key === 'Enter') fetchBtn.click();
-		});
-		    })();
-	</script>
-</body>
+          }
+          html += "</ul>";
+          return html;
+        }
 
+        function showModalWithJson(item) {
+          modalPre.textContent = JSON.stringify(item, null, 2);
+          modal.style.display = "flex";
+        }
+
+        timelineContainer.addEventListener("click", (e) => {
+          const itemElement = e.target.closest(".timeline-item");
+          if (!itemElement) return;
+          const jsonStr = itemElement.dataset.json;
+          if (jsonStr) {
+            try {
+              const item = JSON.parse(jsonStr);
+              showModalWithJson(item);
+            } catch (error) {
+              statusDiv.innerText = "⚠️ 解析详情失败";
+            }
+          }
+        });
+
+        fetchBtn.addEventListener("click", async () => {
+          const childId = childInput.value.trim();
+          if (!childId) {
+            statusDiv.innerText = "❓ 请输入 child_id";
+            return;
+          }
+
+          statusDiv.innerText = "⏳ 发送请求中……";
+          timelineContainer.innerHTML =
+            '<div class="empty-state">⏳ 加载中</div>';
+
+          try {
+            const response = await fetch(API_URL, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+              },
+              body: new URLSearchParams({ child_id: childId }),
+            });
+
+            if (!response.ok) {
+              throw new Error(`HTTP ${response.status}`);
+            }
+
+            const result = await response.json();
+
+            if (result.code === 200 && result.data?.list) {
+              const list = result.data.list;
+              statusDiv.innerText = `✅ 成功 · 共 ${list.length} 条行为 (已按时间倒序)`;
+              timelineContainer.innerHTML = renderTimeline(list);
+            } else {
+              statusDiv.innerText = `⚠️ 返回异常: ${result.message || "未知错误"}`;
+              timelineContainer.innerHTML =
+                '<div class="empty-state">⛔ 没有有效数据</div>';
+            }
+          } catch (error) {
+            statusDiv.innerText = `❌ 请求失败: ${error.message}`;
+            timelineContainer.innerHTML =
+              '<div class="empty-state">📡 网络或解析错误</div>';
+          }
+        });
+
+        childInput.addEventListener("keypress", (e) => {
+          if (e.key === "Enter") fetchBtn.click();
+        });
+      })();
+    </script>
+  </body>
 </html>
